@@ -4,8 +4,8 @@ from common.database_access.db_connection import DbConnection
 
 
 def get_dataframe_from_db(database: str, query: str) -> pd.DataFrame:
-    connection = DbConnection(database=database).connection
-    df = pd.read_sql_query(query, connection)
+    connection = DbConnection(database=database)
+    df = pd.read_sql_query(query, connection.engine)
 
     return df
 
@@ -36,7 +36,7 @@ def truncate_table(database: str, table_name: str, check_foreign_key=True):
         table_name
     )
 
-    db = DbConnection(database=database).connection
+    db = DbConnection(database=database)
     pdsql = pd.io.sql.SQLDatabase(db.engine)
     if check_foreign_key:
         pdsql.execute(truncate_with_foreign_key_checking_query)
@@ -46,14 +46,14 @@ def truncate_table(database: str, table_name: str, check_foreign_key=True):
 
 
 def update_table_from_dataframe(database: str, df: pd.DataFrame, table_name: str):
-    db = DbConnection(database=database).connection
+    db = DbConnection(database=database)
     df.to_sql(table_name, db.engine, if_exists="append", index=False)
     return None
 
 
 def overwrite_ml_table_from_dataframe(
-        df: pd.DataFrame, database: str, table_name: str, check_foreign_key: bool = True
+        database: str, df: pd.DataFrame, table_name: str, check_foreign_key: bool = True
 ):
-    truncate_table(table_name=table_name, check_foreign_key=check_foreign_key)
+    truncate_table(database=database, table_name=table_name, check_foreign_key=check_foreign_key)
     update_table_from_dataframe(df=df, database=database, table_name=table_name)
     return None

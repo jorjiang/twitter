@@ -15,7 +15,7 @@ print(DOTENV_FILE)
 auth = OAuthHandler(environ.get("CUSTOMER_KEY"), environ.get("CUSTOMER_SECRET"))
 auth.set_access_token(environ.get("ACCESS_TOKEN"), environ.get("ACCESS_TOKEN_SECRET"))
 
-listener = Listener(DbConnection('twitter').connection)
+listener = Listener(DbConnection('twitter').mysqldb_connection)
 twitterStream = Stream(auth, listener)
 
 twitterStream.filter(track=[

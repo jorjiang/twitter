@@ -33,7 +33,7 @@ class Listener(StreamListener):
             tweet_id = hash_strings([now.strftime("%m/%d/%Y %H:%M:%S"), author, text])
 
             self.cursor.execute(
-                "INSERT INTO tweets (tweet_id, content_id datetime, author, text) VALUES (%s,%s,%s,%s,%s)",
+                "INSERT INTO tweets (tweet_id, content_id, datetime, author, text) VALUES (%s,%s,%s,%s,%s)",
                 (tweet_id, content_id, now, author, text))
 
             self.connection.commit()
