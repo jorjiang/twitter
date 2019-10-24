@@ -5,6 +5,7 @@ import unicodedata
 from dotenv import load_dotenv
 from tweepy.streaming import StreamListener
 
+from common.helper.content import hash_strings
 from config.config import DOTENV_FILE
 
 assert load_dotenv(DOTENV_FILE)
@@ -23,8 +24,9 @@ class Listener(StreamListener):
             text = all_data["text"]
             text = unicodedata.normalize('NFC', text)
             author = all_data["user"]["screen_name"]
-            self.cursor.execute("INSERT INTO tweets (datetime, author, text) VALUES (%s,%s,%s)",
-                                (datetime.now(), author, text))
+            tweet_id = hash_strings([author, text])
+            self.cursor.execute("INSERT INTO tweets (tweet_id, datetime, author, text) VALUES (%s,%s,%s)",
+                                (tweet_id, datetime.now(), author, text))
 
             self.connection.commit()
 
