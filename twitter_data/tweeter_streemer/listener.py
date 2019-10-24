@@ -14,6 +14,7 @@ assert load_dotenv(DOTENV_FILE)
 class Listener(StreamListener):
 
     def __init__(self, connection):
+        super().__init__()
         self.connection = connection
         self.cursor = self.connection.cursor()
 
@@ -21,19 +22,25 @@ class Listener(StreamListener):
         try:
             all_data = json.loads(data)
 
+            now = datetime.now()
+
             text = all_data["text"]
             text = unicodedata.normalize('NFC', text)
+
             author = all_data["user"]["screen_name"]
-            tweet_id = hash_strings([author, text])
-            self.cursor.execute("INSERT INTO tweets (tweet_id, datetime, author, text) VALUES (%s,%s,%s)",
-                                (tweet_id, datetime.now(), author, text))
+
+            content_id = hash_strings([author, text])
+            tweet_id = hash_strings([now.strftime("%m/%d/%Y %H:%M:%S"), author, text])
+
+            self.cursor.execute(
+                "INSERT INTO tweets (tweet_id, content_id datetime, author, text) VALUES (%s,%s,%s,%s,%s)",
+                (tweet_id, content_id, now, author, text))
 
             self.connection.commit()
+            return True
 
         except Exception as e:
             self.on_error(e)
-
-        return True
 
     def on_error(self, status):
         print(status)

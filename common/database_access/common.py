@@ -5,7 +5,7 @@ from common.database_access.db_connection import DbConnection
 
 def get_dataframe_from_db(database: str, query: str) -> pd.DataFrame:
     connection = DbConnection(database=database).connection
-    df = pd.read_sql_query(query, connection.engine)
+    df = pd.read_sql_query(query, connection)
 
     return df
 

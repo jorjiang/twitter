@@ -1,12 +1,16 @@
 from os import environ
 
 import MySQLdb
+from dotenv import load_dotenv
+
+from config.config import DOTENV_FILE
 
 DATABASE_TWITTER = "twitter"
 
 
 class DbConnection:
     def __init__(self, database: str):
+        assert load_dotenv(DOTENV_FILE)
         self.database = database
 
         if database == DATABASE_TWITTER:
